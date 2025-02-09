@@ -1,0 +1,20 @@
+#top_panel {
+   padding-left: 40%;
+}
+
+#ul_top_panel {
+   display: flex;
+   flex-direction: row;
+   list-style-type: none;
+   font-size: .7em;
+}
+
+#ul_top_panel li {
+   padding-left: 10%;
+   padding-top: 10px;
+}
+
+#user_name {
+  color: navy;
+}
+
