@@ -1,7 +1,7 @@
 -- UFT = yoU Finance Tracker
 DROP TABLE IF EXISTS uft.transaction;
 DROP TABLE IF EXISTS uft.uft_user;
-DROP TABLE IF EXISTS uft.banks;
+DROP TABLE IF EXISTS uft.bank;
 
 DROP   SCHEMA IF EXISTS uft CASCADE;
 CREATE SCHEMA IF NOT EXISTS uft;
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS uft.uft_user (
    PRIMARY KEY(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS uft.banks (
+CREATE TABLE IF NOT EXISTS uft.bank (
    bank_db_id                serial,
    owner_name                VARCHAR(50) NOT NULL,
    bank_name                 VARCHAR(50) NOT NULL,
@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS uft.banks (
    bank_account_num          VARCHAR(15),
    statement_date            SMALLINT, -- date of the month
    display_order             SMALLINT, -- order to be display on web page for each owner
+   total_balance             NUMERIC(10,2) DEFAULT 0.0,
    PRIMARY KEY(bank_db_id),
    unique(bank_alias),
    unique(bank_routing_num, bank_account_num)
@@ -39,7 +40,7 @@ CREATE TABLE IF NOT EXISTS uft.transaction (
    amount       NUMERIC(10, 2)  NOT NULL,
    notes        VARCHAR(200),
    trans_date   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-   FOREIGN KEY(bank_db_id) REFERENCES uft.banks(bank_db_id) ON DELETE CASCADE,
+   FOREIGN KEY(bank_db_id) REFERENCES uft.bank(bank_db_id) ON DELETE CASCADE,
    FOREIGN KEY(user_id) REFERENCES uft.uft_user(user_id) ON DELETE CASCADE,
    PRIMARY KEY(trans_id)
 );
