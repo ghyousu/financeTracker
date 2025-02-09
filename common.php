@@ -182,10 +182,10 @@ function getBanksPerOwner($owner)
    return $bank_array;
 }
 
-function getUniqueBankAliases()
+function getAllBanksArray()
 {
    $query = 'SELECT bank_db_id, owner_name, bank_name, bank_alias, bank_account_num ' .
-            'FROM ' . getBankTableName() . ' ORDER BY bank_db_id';
+            'FROM ' . getBankTableName() . ' ORDER BY display_order';
 
    printDebug("query: '$query'");
 

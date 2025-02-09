@@ -1,8 +1,3 @@
-<?php
-   require_once("common.php");
-   $banks = getUniqueBankAliases();
-?>
-
 <div id='transaction_history_div'>
 
 <ul>

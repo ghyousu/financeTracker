@@ -21,7 +21,7 @@
                   <td class='td_balance'><?php echo $bank->total_balance; ?>     </td>
                   <td class='td_link'>
                       <?php
-                         echo "<a href='/forms/showTransactions?bank_id=$bank->bank_db_id'>";
+                         echo "<a href='/forms/showTransactions.php?bank_id=$bank->bank_db_id'>";
                          echo 'Details';
                          echo '</a>';
                       ?>

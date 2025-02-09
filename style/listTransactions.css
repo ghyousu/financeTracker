@@ -17,7 +17,7 @@ tr.trans_table_tr:nth-child(even) {
 }
 
 td.trans_date_td {
-   width: 120px;
+   width: 200px;
    text-align: center;
    font-size: 1.2em;
 }

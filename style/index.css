@@ -1,0 +1,15 @@
+#div_deposit_withdraw {
+   width: 80%;
+   margin: auto;
+}
+
+#ul_deposit_withdraw {
+   list-style-type: none;
+   display: flex;
+   flex-direction: row;
+   font-size: 2em;
+}
+
+#ul_deposit_withdraw li{
+   padding-left: 3%;
+}
