@@ -23,7 +23,7 @@ function printError($str)
 
 function getCommonSchemaName() { return 'uft'; }
 function getUsersTableName()   { return getCommonSchemaName() . ".uft_user"; }
-function getBanksTableName()   { return getCommonSchemaName() . "." . "banks"; }
+function getBankTableName()    { return getCommonSchemaName() . "." . "bank"; }
 function getTransTableName()   { return getCommonSchemaName() . "." . "transaction"; }
 
 class SQLUserInfo
@@ -48,11 +48,12 @@ class SQLBank
    public $min_balance = 0;
    public $bank_routing_num = '';
    public $bank_account_num = '';
+   public $total_balance = 0;
    public $statement_date = 0;
 
    function toString()
    {
-      return "SQLBank: $this->bank_db_id, '$this->owner_name', '$this->bank_name', '$this->bank_alias', $this->min_balance, $this->bank_routing_num, $this->bank_account_num, this->statement_date";
+      return "SQLBank: $this->bank_db_id, '$this->owner_name', '$this->bank_name', '$this->bank_alias', $this->min_balance, $this->bank_routing_num, $this->bank_account_num, $this->statement_date, $this->total_balance";
    }
 }
 
@@ -134,10 +135,57 @@ function authenticateUser($username, $pw)
    return true;
 }
 
+function getUniqueBankOwnersArray()
+{
+   $query = 'SELECT DISTINCT(owner_name) FROM ' . getBankTableName();
+
+   printDebug("query: '$query'");
+
+   $owners_array = array();
+
+   $result = fetchQueryResults($query);
+
+   while ( $row = pg_fetch_row($result) )
+   {
+      array_push( $owners_array, $row[0] );
+   }
+
+   return $owners_array;
+}
+
+function getBanksPerOwner($owner)
+{
+   $query = 'SELECT bank_db_id, owner_name, bank_name, bank_alias, bank_account_num, total_balance ' .
+            'FROM ' . getBankTableName() .
+            " WHERE owner_name = '" . $owner . "' ORDER BY total_balance DESC";
+
+   printDebug("query: '$query'");
+
+   $bank_array = array();
+
+   $result = fetchQueryResults($query);
+
+   while ( $row = pg_fetch_row($result) )
+   {
+      $bank = new SQLBank();
+
+      $bank->bank_db_id       = $row[0];
+      $bank->owner_name       = $row[1];
+      $bank->bank_name        = $row[2];
+      $bank->bank_alias       = $row[3];
+      $bank->bank_account_num = $row[4];
+      $bank->total_balance    = $row[5];
+
+      array_push( $bank_array, $bank);
+   }
+
+   return $bank_array;
+}
+
 function getUniqueBankAliases()
 {
    $query = 'SELECT bank_db_id, owner_name, bank_name, bank_alias, bank_account_num ' .
-            'FROM ' . getBanksTableName() . ' ORDER BY bank_db_id';
+            'FROM ' . getBankTableName() . ' ORDER BY bank_db_id';
 
    printDebug("query: '$query'");
 
@@ -159,6 +207,25 @@ function getUniqueBankAliases()
    }
 
    return $bank_array;
+}
+
+function getTotalBalance()
+{
+   $query = 'SELECT sum(total_balance) FROM ' . getBankTableName();
+
+   printDebug("query: '$query'");
+
+   $grand_total = 0.0;
+
+   $result = fetchQueryResults($query);
+
+   while ( $row = pg_fetch_row($result) )
+   {
+      $grand_total = $row[0];
+      break;
+   }
+
+   return $grand_total;
 }
 
 function getRecentTransctions($bank_db_id)

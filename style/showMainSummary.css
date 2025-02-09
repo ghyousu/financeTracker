@@ -1,0 +1,39 @@
+#div_main_summary {
+   width: 80%;
+   margin: auto;
+}
+
+#ul_main_summary {
+   list-style-type: none;
+   display: flex;
+   flex-direction: row;
+   font-size: 2em;
+}
+
+#ul_main_summary li {
+   padding-left: 3%;
+}
+
+#ul_total {
+   list-style-type: none;
+   display: flex;
+   flex-direction: row;
+   font-size: 2em;
+}
+
+#ul_total li {
+   padding-left: 3%;
+}
+
+.table_bank_summary td {
+   width: 150px;
+   font-size: 1.5em;
+}
+
+.td_balance {
+   text-align: right;
+}
+
+.td_link {
+   text-align: center;
+}
