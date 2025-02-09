@@ -1,0 +1,34 @@
+ul {
+   list-style-type: none;
+   font-size: 2em;
+}
+
+#transaction_history_div {
+   width: 50%;
+   margin: auto;
+}
+
+tr.trans_table_tr:nth-child(odd) {
+   background-color: orange;
+}
+
+tr.trans_table_tr:nth-child(even) {
+   background-color: gold;
+}
+
+td.trans_date_td {
+   width: 120px;
+   text-align: center;
+   font-size: 1.2em;
+}
+
+td.trans_amount_td {
+   width: 150px;
+   text-align: right;
+   font-size: 1.2em;
+}
+
+td.trans_notes_td {
+   width: 300px;
+   font-size: 1.2em;
+}
