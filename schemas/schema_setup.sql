@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS uft.banks (
    bank_routing_num          VARCHAR(15),
    bank_account_num          VARCHAR(15),
    statement_date            SMALLINT, -- date of the month
+   display_order             SMALLINT, -- order to be display on web page for each owner
    PRIMARY KEY(bank_db_id),
    unique(bank_alias),
    unique(bank_routing_num, bank_account_num)
