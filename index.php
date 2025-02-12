@@ -5,8 +5,7 @@
      <link rel="stylesheet" href="style/index.css">
      <link rel="stylesheet" href="style/top_panel.css">
      <link rel="stylesheet" href="style/showMainSummary.css">
-     <link rel="stylesheet" href="style/showDepositInputs.css">
-     <link rel="stylesheet" href="style/showWithdrawInputs.css">
+     <link rel="stylesheet" href="style/addNewTransactions.css">
 
      <?php
         require_once("common.php");
