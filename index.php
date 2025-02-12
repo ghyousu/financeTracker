@@ -6,6 +6,7 @@
      <link rel="stylesheet" href="style/top_panel.css">
      <link rel="stylesheet" href="style/showMainSummary.css">
      <link rel="stylesheet" href="style/addNewTransactions.css">
+     <link rel="stylesheet" href="style/showRecentTransactions.css">
 
      <?php
         require_once("common.php");
@@ -32,8 +33,8 @@
 
      <hr/>
 
-     <div id='div_deposit_withdraw'>
-          <ul id='ul_deposit_withdraw'>
+     <div id='div_transactions'>
+          <ul id='ul_transactions'>
              <?php $banks = getAllBanksArray(); ?>
              <li>
                 <?php require_once("forms/addNewTransactions.php"); ?>

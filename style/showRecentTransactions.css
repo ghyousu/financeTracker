@@ -1,34 +1,21 @@
-ul {
-   list-style-type: none;
-   font-size: 2em;
+.td_trans_bank_alias {
+   font-size: 1.3em;
+   width: 130px;
 }
 
-#transaction_history_div {
-   width: 50%;
-   margin: auto;
-}
-
-tr.trans_table_tr:nth-child(odd) {
-   background-color: orange;
-}
-
-tr.trans_table_tr:nth-child(even) {
-   background-color: gold;
-}
-
-td.trans_date_td {
-   width: 200px;
+.td_trans_date {
+   font-size: 1.3em;
+   width: 130px;
    text-align: center;
-   font-size: 1.2em;
 }
 
-td.trans_amount_td {
-   width: 150px;
+.td_trans_amount {
+   font-size: 1.3em;
+   width: 120px;
    text-align: right;
-   font-size: 1.2em;
 }
 
-td.trans_notes_td {
-   width: 300px;
-   font-size: 1.2em;
+.td_trans_notes {
+   font-size: 1.3em;
 }
+

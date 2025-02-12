@@ -1,15 +1,15 @@
-#div_deposit_withdraw {
+#div_transactions {
    width: 90%;
    margin: auto;
 }
 
-#ul_deposit_withdraw {
+#ul_transactions {
    list-style-type: none;
    display: flex;
    flex-direction: row;
    font-size: 2em;
 }
 
-#ul_deposit_withdraw li{
+#ul_transactions li{
    padding-left: 3%;
 }
