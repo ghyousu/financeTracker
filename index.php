@@ -2,6 +2,8 @@
   <head>
      <title>yoU Finance Tracker</title>
 
+     <script type="text/javascript" src="scripts/index.js"></script>
+
      <link rel="stylesheet" href="style/index.css">
      <link rel="stylesheet" href="style/top_panel.css">
      <link rel="stylesheet" href="style/showMainSummary.css">
@@ -20,7 +22,7 @@
      ?>
   </head>
 
-  <body>
+  <body onload="on_page_loaded()">
      <?php
          require_once("forms/top_panel.php");
      ?>

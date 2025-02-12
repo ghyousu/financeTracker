@@ -38,7 +38,7 @@
       <b>Grand Total:</b>
    </li>
    <li>
-      <span id='total_blance'>
+      <span class='total_balance'>
          <?php echo getTotalBalance(); ?>
       </span>
    </li>
