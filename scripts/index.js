@@ -19,7 +19,6 @@ function updateCurrencyFormatting(html_class)
      //maximumFractionDigits: 0, // Causes 2500.99 to be printed as $2,501
    });
 
-   debugger;
    var objs = document.getElementsByClassName(html_class);
 
    for (let i=0; i < objs.length; i++)
@@ -31,11 +30,23 @@ function updateCurrencyFormatting(html_class)
 
 }
 
+function updateDatePickerValue(html_class)
+{
+   var objs = document.getElementsByClassName(html_class);
+
+   for (let i=0; i < objs.length; i++)
+   {
+      objs[i].valueAsDate = new Date();
+   }
+}
+
 function on_page_loaded()
 {
    // this is at the top summary window
    updateCurrencyFormatting('td_balance');
    updateCurrencyFormatting('total_balance');
+
+   updateDatePickerValue('input_deposit_date_picker');
 
    // this is in the transaction history
    updateCurrencyFormatting('td_trans_amount');
