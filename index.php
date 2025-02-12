@@ -37,11 +37,11 @@
           <ul id='ul_deposit_withdraw'>
              <?php $banks = getAllBanksArray(); ?>
              <li>
-                <?php require_once("forms/showDepositInputs.php"); ?>
+                <?php require_once("forms/addNewTransactions.php"); ?>
              </li>
 
              <li>
-                <?php require_once("forms/showWithdrawInputs.php"); ?>
+                <?php require_once("forms/showRecentTransactions.php"); ?>
              </li>
           </ul>
      </div>
