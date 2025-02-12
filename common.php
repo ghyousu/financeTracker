@@ -61,6 +61,7 @@ class SQLTransaction
 {
    public $trans_id = 0;
    public $bank_db_id = 0;
+   public $bank_alias = '';
    public $user_id = 0;
    public $amount = 0;
    public $notes = '';
@@ -231,9 +232,16 @@ function getTotalBalance()
 function getRecentTransctions($bank_db_id)
 {
    // TODO: add WHERE clause for specific number of days
-   $query = 'SELECT trans_id, bank_db_id, user_id, amount, notes, trans_date ' .
-            'FROM ' . getTransTableName() .
-            ' WHERE bank_db_id = ' . $bank_db_id . ' ORDER BY trans_date';
+   $query = 'SELECT t.trans_id, t.bank_db_id, b.bank_alias, t.user_id, t.amount, t.notes, t.trans_date FROM ' .
+            getTransTableName() .  ' t, ' .
+            getBankTableName() . ' b ' .
+            'WHERE t.bank_db_id = b.bank_db_id ' .
+            'ORDER BY trans_date DESC';
+
+   if ($bank_db_id > 0)
+   {
+      $query = $query . ' WHERE bank_db_id = ' . $bank_db_id;
+   }
 
    printDebug("query: '$query'");
 
@@ -247,10 +255,11 @@ function getRecentTransctions($bank_db_id)
 
       $trans->trans_id         = $row[0];
       $trans->bank_db_id       = $row[1];
-      $trans->user_id          = $row[2];
-      $trans->amount           = $row[3];
-      $trans->notes            = $row[4];
-      $trans->trans_date       = $row[5];
+      $trans->bank_alias       = $row[2];
+      $trans->user_id          = $row[3];
+      $trans->amount           = $row[4];
+      $trans->notes            = $row[5];
+      $trans->trans_date       = $row[6];
 
       array_push( $recent_trans, $trans);
    }
