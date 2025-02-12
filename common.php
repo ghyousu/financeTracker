@@ -258,4 +258,25 @@ function getRecentTransctions($bank_db_id)
    return $recent_trans;
 }
 
+function addTransactions($transactions)
+{
+   if (count($transactions) == 0)
+   {
+      return ;
+   }
+
+   $query = 'INSERT INTO ' . getTransTableName() . ' (user_id, bank_db_id, amount, trans_date, notes) VALUES ';
+
+   foreach ($transactions as $trans)
+   {
+      $query = $query . "($trans->user_id, $trans->bank_db_id, $trans->amount, '$trans->trans_date', '$trans->notes'),";
+   }
+
+   // remove the last ","
+   $query = substr($query, 0, -1);
+
+   fetchQueryResults($query);
+}
+
+
 ?>
