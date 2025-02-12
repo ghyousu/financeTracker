@@ -1,6 +1,6 @@
 <div id='div_deposit_form'>
 
-<form id='form_deposit' action='/post/deposit_post.php'>
+<form id='form_deposit'  method='POST' action='/post/deposit_post.php'>
    <b>Deposits</b>
    <table id='table_deposit_form' border=1>
       <tr>
