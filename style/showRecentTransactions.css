@@ -1,3 +1,11 @@
+.tr_deposits {
+   background-color: gold;
+}
+
+.tr_withdrawals {
+   background-color: magenta;
+}
+
 .td_trans_bank_alias {
    font-size: 1.3em;
    width: 130px;
