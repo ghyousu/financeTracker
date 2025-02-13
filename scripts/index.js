@@ -46,7 +46,7 @@ function on_page_loaded()
    updateCurrencyFormatting('td_balance');
    updateCurrencyFormatting('total_balance');
 
-   updateDatePickerValue('input_deposit_date_picker');
+   updateDatePickerValue('input_transactions_date_picker');
 
    // this is in the transaction history
    updateCurrencyFormatting('td_trans_amount');

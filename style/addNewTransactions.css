@@ -1,25 +1,25 @@
-.td_deposit_bank_alias {
+.td_transactions_bank_alias {
    font-size: 1.3em;
    width: 100px;
 }
 
-.input_deposit_amount {
+.input_transactions_amount {
    font-size: 1.2em;
    width: 100px;
 }
 
-.input_deposit_date_picker {
+.input_transactions_date_picker {
    font-size: 1.3em;
 }
 
-#td_deposit_submit {
+#td_transactions_submit {
    padding-top: 5px;
    padding-bottom: 5px;
    border: 0;
    text-align: center;
 }
 
-#input_deposit_submit {
+#input_transactions_submit {
    font-size: 2em;
 }
 
