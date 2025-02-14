@@ -21,6 +21,7 @@
          <th>Date</th>
          <th>Amount</th>
          <th>Notes</th>
+         <th/>
       </tr>
 
       <?php
@@ -45,6 +46,12 @@
             <td class='td_trans_amount'> <?php echo $trans->amount; ?> </td>
 
             <td class='td_trans_notes'> <?php echo $trans->notes; ?> </td>
+
+            <td class='td_edit_trans'>
+               <?php
+                  echo '<a href="/form/editTransaction.php?trans_id=' . $trans->trans_id. '">Edit</a>';
+               ?>
+            </td>
          </tr>
       <?php endforeach; ?>
 
