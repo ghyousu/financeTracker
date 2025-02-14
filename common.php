@@ -32,10 +32,11 @@ class SQLUserInfo
    public $user_name = '';
    public $fname = '';
    public $lname = '';
+   public $max_trans = 50;
 
    function toString()
    {
-      return "SQLUserInfo: $this->user_id '$this->user_name' '$this->fname $this->lname'";
+      return "SQLUserInfo: $this->user_id '$this->user_name' '$this->fname $this->lname' $this->max_trans";
    }
 }
 
@@ -116,7 +117,7 @@ function fetchQueryResults($query)
 
 function authenticateUser($username, $pw)
 {
-   $query = 'SELECT user_id, user_name, fname, lname ' .
+   $query = 'SELECT user_id, user_name, fname, lname, max_trans ' .
             'FROM ' . getUsersTableName() .
             " WHERE user_name = '$username' AND pw = '" . sha1($pw) . "'";
 
@@ -130,6 +131,7 @@ function authenticateUser($username, $pw)
    $user_info->user_name = $row[1];
    $user_info->fname     = $row[2];
    $user_info->lname     = $row[3];
+   $user_info->max_trans = $row[4];
 
    $_SESSION['sql_user_info'] = $user_info;
 
@@ -236,7 +238,7 @@ function getRecentTransctions($bank_db_id)
             getTransTableName() .  ' t, ' .
             getBankTableName() . ' b ' .
             'WHERE t.bank_db_id = b.bank_db_id ' .
-            'ORDER BY trans_date DESC';
+            'ORDER BY trans_date DESC LIMIT ' . $_SESSION['sql_user_info']->max_trans;
 
    if ($bank_db_id > 0)
    {
@@ -287,5 +289,14 @@ function addTransactions($transactions)
    fetchQueryResults($query);
 }
 
+function updateMaxTransactions($new_max_entries)
+{
+   $curr_user = $_SESSION['sql_user_info'];
+
+   $query = 'UPDATE ' . getUsersTableName() . ' SET max_trans = ' . $new_max_entries .
+            ' WHERE user_id = ' . $curr_user->user_id;
+
+   fetchQueryResults($query) && $curr_user->max_trans = $new_max_entries;
+}
 
 ?>
