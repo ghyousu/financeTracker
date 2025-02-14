@@ -1,12 +1,12 @@
 -- UFT = yoU Finance Tracker
-DROP TABLE IF EXISTS uft.transaction;
-DROP TABLE IF EXISTS uft.uft_user;
-DROP TABLE IF EXISTS uft.bank;
+DROP TABLE IF EXISTS pbt.transaction;
+DROP TABLE IF EXISTS pbt.pbt_user;
+DROP TABLE IF EXISTS pbt.bank;
 
-DROP   SCHEMA IF EXISTS uft CASCADE;
-CREATE SCHEMA IF NOT EXISTS uft;
+DROP   SCHEMA IF EXISTS pbt CASCADE;
+CREATE SCHEMA IF NOT EXISTS pbt;
 
-CREATE TABLE IF NOT EXISTS uft.uft_user (
+CREATE TABLE IF NOT EXISTS pbt.pbt_user (
    user_id     serial,
    user_name   VARCHAR(100) NOT NULL,
    fname       VARCHAR(50) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS uft.uft_user (
    PRIMARY KEY(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS uft.bank (
+CREATE TABLE IF NOT EXISTS pbt.bank (
    bank_db_id                serial,
    owner_name                VARCHAR(50) NOT NULL,
    bank_name                 VARCHAR(50) NOT NULL,
@@ -34,15 +34,15 @@ CREATE TABLE IF NOT EXISTS uft.bank (
    unique(bank_routing_num, bank_account_num)
 );
 
-CREATE TABLE IF NOT EXISTS uft.transaction (
+CREATE TABLE IF NOT EXISTS pbt.transaction (
    trans_id     serial,
    bank_db_id   INT NOT NULL, -- foreign key
    user_id      INT NOT NULL, -- foreign key
    amount       NUMERIC(10, 2)  NOT NULL,
    notes        VARCHAR(200),
    trans_date   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-   FOREIGN KEY(bank_db_id) REFERENCES uft.bank(bank_db_id) ON DELETE CASCADE,
-   FOREIGN KEY(user_id) REFERENCES uft.uft_user(user_id) ON DELETE CASCADE,
+   FOREIGN KEY(bank_db_id) REFERENCES pbt.bank(bank_db_id) ON DELETE CASCADE,
+   FOREIGN KEY(user_id) REFERENCES pbt.pbt_user(user_id) ON DELETE CASCADE,
    PRIMARY KEY(trans_id)
 );
 

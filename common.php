@@ -21,8 +21,8 @@ function printError($str)
    echo "Error: $str <br/>";
 }
 
-function getCommonSchemaName() { return 'uft'; }
-function getUsersTableName()   { return getCommonSchemaName() . ".uft_user"; }
+function getCommonSchemaName() { return 'pbt'; }
+function getUsersTableName()   { return getCommonSchemaName() . ".pbt_user"; }
 function getBankTableName()    { return getCommonSchemaName() . "." . "bank"; }
 function getTransTableName()   { return getCommonSchemaName() . "." . "transaction"; }
 
