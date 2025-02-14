@@ -35,17 +35,16 @@
 
      <hr/>
 
-     <div id='div_transactions'>
-          <ul id='ul_transactions'>
-             <?php $banks = getAllBanksArray(); ?>
-             <li>
-                <?php require_once("forms/addNewTransactions.php"); ?>
-             </li>
+     <?php $banks = getAllBanksArray(); ?>
 
-             <li>
-                <?php require_once("forms/showRecentTransactions.php"); ?>
-             </li>
-          </ul>
+     <div id='div_deposits'>
+        <?php  require_once("forms/addNewTransactions.php"); ?>
+     </div>
+
+     <hr/>
+
+     <div id='div_transactions'>
+        <?php require_once("forms/showRecentTransactions.php"); ?>
      </div>
 
   </body>

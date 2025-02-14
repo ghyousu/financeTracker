@@ -1,15 +1,12 @@
-#div_transactions {
-   width: 90%;
-   margin: auto;
-}
-
-#ul_transactions {
-   list-style-type: none;
-   display: flex;
-   flex-direction: row;
+#div_deposits {
+   width: 70%;
+   margin-left: 15%;
    font-size: 2em;
 }
 
-#ul_transactions li{
-   padding-left: 3%;
+#div_transactions {
+   width: 70%;
+   margin-left: 15%;
+   font-size: 2em;
 }
+
