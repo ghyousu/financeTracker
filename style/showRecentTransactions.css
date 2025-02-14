@@ -24,11 +24,16 @@
    background-color: hotpink;
 }
 
-.td_deposit_row_index {
+.td_trans_row_index {
    font-size: 1.3em;
    text-align: right;
    padding-right: 2%;
-   width: 10%;
+   width: 15%;
+}
+
+.td_trans_checkbox {
+   width: 30px;
+   height: 30px;
 }
 
 .td_trans_bank_alias {
@@ -51,5 +56,9 @@
 
 .td_trans_notes {
    font-size: 1.3em;
+   padding-left: 1%;
 }
 
+#input_delete_transactions_submit {
+   font-size: 2em;
+}

@@ -13,6 +13,7 @@
       </li>
    </ul>
 
+<form id='form_delete_trans'  method='POST' action='/post/deleteTransactions.php'>
    <table id='table_recent_transactions' border=1>
       <tr>
          <th/>
@@ -32,7 +33,10 @@
          <?php else : ?>
          <tr class='tr_withdrawals'>
          <?php endif; ?>
-            <td class='td_deposit_row_index'> <?php echo $row_index++; ?> </td>
+            <td class='td_trans_row_index'>
+               <?php echo $row_index++; ?>
+               <input class='td_trans_checkbox' type='checkbox' name='td_trans_checkbox[]' <?php echo "value='" . $trans->trans_id . "'"; ?> />
+            </td>
 
             <td class='td_trans_bank_alias'> <?php echo $trans->bank_alias; ?> </td>
 
@@ -43,6 +47,13 @@
             <td class='td_trans_notes'> <?php echo $trans->notes; ?> </td>
          </tr>
       <?php endforeach; ?>
+
+      <tr>
+          <td>
+              <input id='input_delete_transactions_submit' type="submit" value="Delete">
+          </td>
+      <tr>
    </table>
+</form>
 
 </div>

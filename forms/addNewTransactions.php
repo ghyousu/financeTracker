@@ -1,7 +1,8 @@
 <div id='div_transactions_form'>
 
 <form id='form_deposit'  method='POST' action='/post/postNewTransactions.php'>
-   <b>Transactions</b>
+   <b>New Transactions</b>
+
    <table id='table_transactions_form' border=1>
       <tr>
          <th>Bank</th>

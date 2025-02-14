@@ -289,6 +289,26 @@ function addTransactions($transactions)
    fetchQueryResults($query);
 }
 
+function deleteTransactions($trans_id_array)
+{
+   if (count($trans_id_array) == 0)
+   {
+      return ;
+   }
+
+   $query = 'DELETE FROM ' . getTransTableName() . ' WHERE trans_id IN (';
+
+   foreach ($trans_id_array as $trans_id)
+   {
+      $query = $query . $trans_id . ',';
+   }
+
+   // remove the last "," and add a ")"
+   $query = substr($query, 0, -1) . ')';
+
+   fetchQueryResults($query);
+}
+
 function updateMaxTransactions($new_max_entries)
 {
    $curr_user = $_SESSION['sql_user_info'];
