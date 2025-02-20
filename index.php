@@ -19,7 +19,7 @@
         {
            // header("location: /login.php");
            /* use auto login */
-           $username = 'myou';
+           $username = 'axel';
            $password = '1234';
            authenticateUser($username, $password);
         }

@@ -43,8 +43,8 @@ CREATE TABLE IF NOT EXISTS pbt.transaction (
    notes        VARCHAR(200),
    trans_date   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
    last_update  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-   FOREIGN KEY(bank_db_id) REFERENCES uft.bank(bank_db_id) ON DELETE CASCADE,
-   FOREIGN KEY(user_id) REFERENCES uft.uft_user(user_id) ON DELETE CASCADE,
+   FOREIGN KEY(bank_db_id) REFERENCES pbt.bank(bank_db_id) ON DELETE CASCADE,
+   FOREIGN KEY(user_id) REFERENCES pbt.pbt_user(user_id) ON DELETE CASCADE,
    PRIMARY KEY(trans_id)
 );
 
