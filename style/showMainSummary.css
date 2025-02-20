@@ -25,6 +25,10 @@
    padding-left: 3%;
 }
 
+.tr_is_joint_account {
+   background-color: yellow;
+}
+
 .table_bank_summary td {
    width: 150px;
    font-size: 1.5em;
