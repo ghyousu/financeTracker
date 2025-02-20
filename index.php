@@ -17,17 +17,21 @@
 
         if (!isset($_SESSION['LOGGED_IN']))
         {
-           header("location: /login.php");
+           // header("location: /login.php");
+           /* use auto login */
+           $username = 'myou';
+           $password = '1234';
+           authenticateUser($username, $password);
         }
      ?>
   </head>
 
   <body onload="on_page_loaded()">
      <?php
-         require_once("forms/top_panel.php");
+         // use auto-login require_once("forms/top_panel.php");
      ?>
 
-     <hr/>
+     <!-- <hr/> -->
 
      <?php
         require_once("forms/showMainSummary.php");
