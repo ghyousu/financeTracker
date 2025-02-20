@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS uft.bank (
    min_balance               SMALLINT,
    bank_routing_num          VARCHAR(15),
    bank_account_num          VARCHAR(15),
+   is_joint_account          BOOLEAN,
    statement_date            SMALLINT, -- date of the month
    display_order             SMALLINT, -- order to be display on web page for each owner
    total_balance             NUMERIC(10,2) DEFAULT 0.0,
@@ -41,6 +42,7 @@ CREATE TABLE IF NOT EXISTS uft.transaction (
    amount       NUMERIC(10, 2)  NOT NULL,
    notes        VARCHAR(200),
    trans_date   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+   last_update  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
    FOREIGN KEY(bank_db_id) REFERENCES uft.bank(bank_db_id) ON DELETE CASCADE,
    FOREIGN KEY(user_id) REFERENCES uft.uft_user(user_id) ON DELETE CASCADE,
    PRIMARY KEY(trans_id)
