@@ -49,6 +49,7 @@ class SQLBank
    public $min_balance = 0;
    public $bank_routing_num = '';
    public $bank_account_num = '';
+   public $is_joint_account = 0;
    public $total_balance = 0;
    public $statement_date = 0;
 
@@ -158,7 +159,7 @@ function getUniqueBankOwnersArray()
 
 function getBanksPerOwner($owner)
 {
-   $query = 'SELECT bank_db_id, owner_name, bank_name, bank_alias, bank_account_num, total_balance ' .
+   $query = 'SELECT bank_db_id, owner_name, bank_name, bank_alias, bank_account_num, total_balance, is_joint_account ' .
             'FROM ' . getBankTableName() .
             " WHERE owner_name = '" . $owner . "' ORDER BY total_balance DESC";
 
@@ -178,6 +179,7 @@ function getBanksPerOwner($owner)
       $bank->bank_alias       = $row[3];
       $bank->bank_account_num = $row[4];
       $bank->total_balance    = $row[5];
+      $bank->is_joint_account = ($row[6] == 't');
 
       array_push( $bank_array, $bank);
    }

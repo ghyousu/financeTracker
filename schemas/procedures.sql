@@ -7,6 +7,7 @@ AS $$
    BEGIN
       SELECT total_balance INTO old_balance FROM pbt.bank WHERE bank_db_id = NEW.bank_db_id;
       new_balance := old_balance + NEW.amount;
+      NEW.last_update = now();
 
       UPDATE pbt.bank SET total_balance = new_balance WHERE bank_db_id = NEW.bank_db_id;
       RETURN NEW;

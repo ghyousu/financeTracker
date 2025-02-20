@@ -16,7 +16,12 @@
 
          <table class='table_bank_summary' border=1>
             <?php foreach ($banks as $bank): ?>
-               <tr'>
+              <?php if ($bank->is_joint_account) : ?>
+                <tr class='tr_is_joint_account'>
+              <?php else : ?>
+                <tr class='tr_not_joint_account'>
+              <?php endif; ?>
+
                   <td><?php echo $bank->bank_alias; ?> </td>
                   <td class='td_balance'><?php echo $bank->total_balance; ?>     </td>
 <!--                  <td class='td_link'>

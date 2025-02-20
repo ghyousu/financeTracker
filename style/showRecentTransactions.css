@@ -59,6 +59,12 @@
    padding-left: 1%;
 }
 
+.td_edit_trans {
+   font-size: 1.3em;
+   padding-left: 1%;
+   width: 7%;
+}
+
 #input_delete_transactions_submit {
    font-size: 2em;
 }

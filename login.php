@@ -13,6 +13,8 @@
       $thisScriptWeb = $_SERVER["SCRIPT_NAME"];
       $main_page     = '/index.php';
 
+      header("location: $main_page"); // use auto-login
+/*
       if (isset($_SESSION['LOGGED_IN']))
       {
          header("location: $main_page");
@@ -42,6 +44,7 @@
             unset($_SESSION['msg']);
          }
       }
+*/
    ?>
 </head>
 
