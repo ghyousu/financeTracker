@@ -240,7 +240,7 @@ function getRecentTransctions($bank_db_id)
             getTransTableName() .  ' t, ' .
             getBankTableName() . ' b ' .
             'WHERE t.bank_db_id = b.bank_db_id ' .
-            'ORDER BY trans_date DESC LIMIT ' . $_SESSION['sql_user_info']->max_trans;
+            'ORDER BY trans_date DESC, last_update DESC LIMIT ' . $_SESSION['sql_user_info']->max_trans;
 
    if ($bank_db_id > 0)
    {
