@@ -32,11 +32,21 @@ function updateCurrencyFormatting(html_class)
 
 function updateDatePickerValue(html_class)
 {
+   // debugger ;
    var objs = document.getElementsByClassName(html_class);
+
+   const mm_array = [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" ];
+   const dd_array = [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" ];
+
+   var local_date  = new Date();
+   var yyyy = local_date.getFullYear();
+   var mm   = mm_array[local_date.getMonth()];
+   var dd   = dd_array[local_date.getDate()];
+   var date_str = yyyy + '-' + mm + '-' + dd;
 
    for (let i=0; i < objs.length; i++)
    {
-      objs[i].valueAsDate = new Date();
+      objs[i].value = date_str;
    }
 }
 
