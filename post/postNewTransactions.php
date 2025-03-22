@@ -31,7 +31,7 @@
             $trans->bank_db_id = $bank->bank_db_id;
             $trans->amount     = $_POST[$post_amount_var_name];
             $trans->trans_date = $_POST[$post_date_var_name];
-            $trans->notes      = $_POST[$post_notes_var_name];
+            $trans->notes      = str_replace("'", "''", $_POST[$post_notes_var_name]);
 
             array_push($transactions, $trans);
          }
