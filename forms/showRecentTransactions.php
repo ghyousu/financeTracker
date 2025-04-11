@@ -2,7 +2,16 @@
 
    <ul id='ul_recent_trans'>
       <li>
-         Recent Transactions
+         <select name='bank_filter' id='bank_dropdown_filter'>
+            <option value='-1'>All</option>
+            <?php
+               $banks = getAllBanksArray();
+               foreach ($banks as $bank_obj)
+               {
+                  echo '<option value="' . $bank_obj->bank_db_id . '">' . $bank_obj->bank_alias . '</option>';
+               }
+            ?>
+         </select>
       </li>
 
       <li>
