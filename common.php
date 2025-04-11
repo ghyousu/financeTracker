@@ -23,6 +23,7 @@ function printError($str)
 
 function getCommonSchemaName() { return 'uft'; }
 function getUsersTableName()   { return getCommonSchemaName() . ".uft_user"; }
+function getFilterTableName()  { return getCommonSchemaName() . ".uft_filters"; }
 function getBankTableName()    { return getCommonSchemaName() . "." . "bank"; }
 function getTransTableName()   { return getCommonSchemaName() . "." . "transaction"; }
 
@@ -231,6 +232,19 @@ function getTotalBalance()
    }
 
    return $grand_total;
+}
+
+function applyBankIdFilter($bank_id)
+{
+   $curr_user = $_SESSION['sql_user_info'];
+
+   $query = 'INSERT INTO ' . getFilterTableName() . ' (user_id, bank_id) ' .
+            'VALUES (' . $curr_user->user_id . ', ' . $bank_id . ')' .
+            'ON CONFLICT (user_id) DO UPDATE SET bank_id = ' . $bank_id;
+
+   printDebug("query: '$query'");
+
+   fetchQueryResults($query);
 }
 
 function getRecentTransctions($bank_db_id)

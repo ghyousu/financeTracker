@@ -3,6 +3,7 @@
      <title>yoU Finance Tracker</title>
 
      <script type="text/javascript" src="scripts/index.js"></script>
+     <script type="text/javascript" src="scripts/showRecentTransactions.js"></script>
 
      <link rel="stylesheet" href="style/index.css">
      <link rel="stylesheet" href="style/top_panel.css">

@@ -1,5 +1,6 @@
 -- UFT = yoU Finance Tracker
 DROP TABLE IF EXISTS uft.transaction;
+DROP TABLE IF EXISTS uft.uft_filters;
 DROP TABLE IF EXISTS uft.uft_user;
 DROP TABLE IF EXISTS uft.bank;
 
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS uft.uft_user (
    PRIMARY KEY(user_id)
 );
 
+
 CREATE TABLE IF NOT EXISTS uft.bank (
    bank_db_id                serial,
    owner_name                VARCHAR(50) NOT NULL,
@@ -33,6 +35,14 @@ CREATE TABLE IF NOT EXISTS uft.bank (
    PRIMARY KEY(bank_db_id),
    unique(bank_alias),
    unique(bank_routing_num, bank_account_num)
+);
+
+CREATE TABLE IF NOT EXISTS uft.uft_filters (
+   user_id      INT NOT NULL,            -- foreign key
+   bank_id      INT DEFAULT -1 NOT NULL, -- foreign key
+   PRIMARY KEY(user_id),
+   FOREIGN KEY(user_id) REFERENCES uft.uft_user(user_id) ON DELETE CASCADE,
+   FOREIGN KEY(bank_id) REFERENCES uft.bank(bank_db_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS uft.transaction (

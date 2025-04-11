@@ -2,13 +2,13 @@
 
    <ul id='ul_recent_trans'>
       <li>
-         <select name='bank_filter' id='bank_dropdown_filter'>
+         <select name='bank_filter' id='bank_dropdown_filter' onchange='bank_filter_changed()'>
             <option value='-1'>All</option>
             <?php
                $banks = getAllBanksArray();
                foreach ($banks as $bank_obj)
                {
-                  echo '<option value="' . $bank_obj->bank_db_id . '">' . $bank_obj->bank_alias . '</option>';
+                  echo '<option value="' . $bank_obj->bank_db_id . '">' . $bank_obj->bank_alias . '</option><br/>';
                }
             ?>
          </select>
