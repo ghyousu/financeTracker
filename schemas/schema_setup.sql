@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS pbt.pbt_user (
    --- filters BEGIN
    max_trans   SMALLINT DEFAULT 30 NOT NULL,
    bank_id_filter SMALLINT DEFAULT 0 NOT NULL,
+   notes_filter VARCHAR(200) DEFAULT '',
    --- filters END
    unique(user_name),
    unique(fname,  lname),

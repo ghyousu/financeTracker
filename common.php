@@ -34,6 +34,7 @@ class SQLUserInfo
    public $lname = '';
    public $max_trans = 50;
    public $bank_id_filter = 0;
+   public $notes_filter = '';
 
    function toString()
    {
@@ -119,7 +120,7 @@ function fetchQueryResults($query)
 
 function authenticateUser($username, $pw)
 {
-   $query = 'SELECT user_id, user_name, fname, lname, max_trans, bank_id_filter ' .
+   $query = 'SELECT user_id, user_name, fname, lname, max_trans, bank_id_filter, notes_filter ' .
             'FROM ' . getUsersTableName() .
             " WHERE user_name = '$username' AND pw = '" . sha1($pw) . "'";
 
@@ -135,6 +136,7 @@ function authenticateUser($username, $pw)
    $user_info->lname          = $row[3];
    $user_info->max_trans      = $row[4];
    $user_info->bank_id_filter = $row[5];
+   $user_info->notes_filter   = $row[6];
 
    $_SESSION['sql_user_info'] = $user_info;
 
@@ -247,6 +249,18 @@ function applyBankIdFilter($bank_id)
    fetchQueryResults($query) && $_SESSION['sql_user_info']->bank_id_filter = $bank_id;
 }
 
+function updateNotesFilter($new_notes_filter)
+{
+   $curr_user = $_SESSION['sql_user_info'];
+
+   $query = 'UPDATE ' . getUsersTableName() . " SET notes_filter = '" . $new_notes_filter . "'" .
+            ' WHERE user_id = ' .  $curr_user->user_id;
+
+   printDebug("query: '$query'");
+
+   fetchQueryResults($query) && $_SESSION['sql_user_info']->notes_filter = $new_notes_filter;
+}
+
 function getRecentTransctions($bank_db_id)
 {
    $query = 'SELECT t.trans_id, t.bank_db_id, b.bank_alias, t.user_id, t.amount, t.notes, t.trans_date FROM ' .
@@ -254,11 +268,19 @@ function getRecentTransctions($bank_db_id)
             getBankTableName() . ' b ' .
             'WHERE t.bank_db_id = b.bank_db_id ';
 
+   // ---------------------------- filters BEGIN -------------------------------------
    $bank_id_filter = $_SESSION['sql_user_info']->bank_id_filter;
    if ($bank_id_filter > 0)
    {
       $query = $query . ' AND t.bank_db_id = ' . $bank_id_filter;
    }
+
+   $notes_filter = $_SESSION['sql_user_info']->notes_filter;
+   if ($notes_filter != '')
+   {
+      $query = $query . " AND t.notes ILIKE('%" . $notes_filter . "%')";
+   }
+   // ---------------------------- filters END ---------------------------------------
 
    $query = $query . ' ORDER BY trans_date DESC, last_update DESC LIMIT ' . $_SESSION['sql_user_info']->max_trans;
 
