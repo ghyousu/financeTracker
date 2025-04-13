@@ -1,3 +1,11 @@
+function updateBankFilterInRecentTransactionsOnLoad()
+{
+   // debugger;
+   var bank_drop_down_sel = document.getElementById('bank_dropdown_filter');
+
+   bank_drop_down_sel.value = getBankFilterId();
+}
+
 function bank_filter_changed()
 {
    // debugger;

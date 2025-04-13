@@ -1,5 +1,13 @@
-<div id='div_recent_transactions'>
+<script type="text/javascript">
 
+function getBankFilterId()
+{
+   return <?php echo $_SESSION["sql_user_info"]->bank_id_filter; ?>;
+}
+
+</script>
+
+<div id='div_recent_transactions'>
    <ul id='ul_recent_trans'>
       <li>
          <select name='bank_filter' id='bank_dropdown_filter' onchange='bank_filter_changed()'>

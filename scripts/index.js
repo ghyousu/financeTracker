@@ -63,5 +63,8 @@ function on_page_loaded()
 
    // this is in the transaction history
    updateCurrencyFormatting('td_trans_amount');
+
+   // update bank filter drop down
+   updateBankFilterInRecentTransactionsOnLoad();
 }
 
