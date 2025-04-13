@@ -33,10 +33,11 @@ class SQLUserInfo
    public $fname = '';
    public $lname = '';
    public $max_trans = 50;
+   public $bank_id_filter = 0;
 
    function toString()
    {
-      return "SQLUserInfo: $this->user_id '$this->user_name' '$this->fname $this->lname' $this->max_trans";
+      return "SQLUserInfo: $this->user_id '$this->user_name' '$this->fname $this->lname' $this->max_trans $this->bank_id_filter" ;
    }
 }
 
@@ -118,7 +119,7 @@ function fetchQueryResults($query)
 
 function authenticateUser($username, $pw)
 {
-   $query = 'SELECT user_id, user_name, fname, lname, max_trans ' .
+   $query = 'SELECT user_id, user_name, fname, lname, max_trans, bank_id_filter ' .
             'FROM ' . getUsersTableName() .
             " WHERE user_name = '$username' AND pw = '" . sha1($pw) . "'";
 
@@ -128,11 +129,12 @@ function authenticateUser($username, $pw)
 
    $row  = pg_fetch_row($result);
    $user_info = new SQLUserInfo();
-   $user_info->user_id   = $row[0];
-   $user_info->user_name = $row[1];
-   $user_info->fname     = $row[2];
-   $user_info->lname     = $row[3];
-   $user_info->max_trans = $row[4];
+   $user_info->user_id        = $row[0];
+   $user_info->user_name      = $row[1];
+   $user_info->fname          = $row[2];
+   $user_info->lname          = $row[3];
+   $user_info->max_trans      = $row[4];
+   $user_info->bank_id_filter = $row[5];
 
    $_SESSION['sql_user_info'] = $user_info;
 
@@ -233,14 +235,32 @@ function getTotalBalance()
    return $grand_total;
 }
 
+function applyBankIdFilter($bank_id)
+{
+   $curr_user = $_SESSION['sql_user_info'];
+
+   $query = 'UPDATE ' . getUsersTableName() . ' SET bank_id_filter = ' . $bank_id .
+            ' WHERE user_id = ' .  $curr_user->user_id;
+
+   printDebug("query: '$query'");
+
+   fetchQueryResults($query) && $_SESSION['sql_user_info']->bank_id_filter = $bank_id;
+}
+
 function getRecentTransctions($bank_db_id)
 {
-   // TODO: add WHERE clause for specific number of days
    $query = 'SELECT t.trans_id, t.bank_db_id, b.bank_alias, t.user_id, t.amount, t.notes, t.trans_date FROM ' .
             getTransTableName() .  ' t, ' .
             getBankTableName() . ' b ' .
-            'WHERE t.bank_db_id = b.bank_db_id ' .
-            'ORDER BY trans_date DESC, last_update DESC LIMIT ' . $_SESSION['sql_user_info']->max_trans;
+            'WHERE t.bank_db_id = b.bank_db_id ';
+
+   $bank_id_filter = $_SESSION['sql_user_info']->bank_id_filter;
+   if ($bank_id_filter > 0)
+   {
+      $query = $query . ' AND t.bank_db_id = ' . $bank_id_filter;
+   }
+
+   $query = $query . ' ORDER BY trans_date DESC, last_update DESC LIMIT ' . $_SESSION['sql_user_info']->max_trans;
 
    if ($bank_db_id > 0)
    {

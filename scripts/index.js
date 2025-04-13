@@ -32,7 +32,7 @@ function updateCurrencyFormatting(html_class)
 
 function updateDatePickerValue(html_class)
 {
-   debugger ;
+   // debugger ;
    var objs = document.getElementsByClassName(html_class);
 
    const MM_ARRAY = [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" ];
@@ -63,5 +63,8 @@ function on_page_loaded()
 
    // this is in the transaction history
    updateCurrencyFormatting('td_trans_amount');
+
+   // update bank filter drop down
+   updateBankFilterInRecentTransactionsOnLoad();
 }
 

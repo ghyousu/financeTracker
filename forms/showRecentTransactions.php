@@ -1,8 +1,25 @@
-<div id='div_recent_transactions'>
+<script type="text/javascript">
 
+function getBankFilterId()
+{
+   return <?php echo $_SESSION["sql_user_info"]->bank_id_filter; ?>;
+}
+
+</script>
+
+<div id='div_recent_transactions'>
    <ul id='ul_recent_trans'>
       <li>
-         Recent Transactions
+         <select name='bank_filter' id='bank_dropdown_filter' onchange='bank_filter_changed()'>
+            <option value='0'>All</option>
+            <?php
+               $banks = getAllBanksArray();
+               foreach ($banks as $bank_obj)
+               {
+                  echo '<option value="' . $bank_obj->bank_db_id . '">' . $bank_obj->bank_alias . '</option><br/>';
+               }
+            ?>
+         </select>
       </li>
 
       <li>
@@ -21,7 +38,7 @@
          <th>Date</th>
          <th>Amount</th>
          <th>Notes</th>
-         <th/>
+<!--          <th/> -->
       </tr>
 
       <?php
@@ -47,11 +64,11 @@
 
             <td class='td_trans_notes'> <?php echo $trans->notes; ?> </td>
 
-            <td class='td_edit_trans'>
+<!--            <td class='td_edit_trans'>
                <?php
                   echo '<a href="/form/editTransaction.php?trans_id=' . $trans->trans_id. '">Edit</a>';
                ?>
-            </td>
+            </td> -->
          </tr>
       <?php endforeach; ?>
 
