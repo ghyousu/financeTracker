@@ -3,7 +3,7 @@
    <ul id='ul_recent_trans'>
       <li>
          <select name='bank_filter' id='bank_dropdown_filter' onchange='bank_filter_changed()'>
-            <option value='-1'>All</option>
+            <option value='0'>All</option>
             <?php
                $banks = getAllBanksArray();
                foreach ($banks as $bank_obj)

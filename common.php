@@ -23,7 +23,6 @@ function printError($str)
 
 function getCommonSchemaName() { return 'uft'; }
 function getUsersTableName()   { return getCommonSchemaName() . ".uft_user"; }
-function getFilterTableName()  { return getCommonSchemaName() . ".uft_filters"; }
 function getBankTableName()    { return getCommonSchemaName() . "." . "bank"; }
 function getTransTableName()   { return getCommonSchemaName() . "." . "transaction"; }
 
@@ -34,10 +33,11 @@ class SQLUserInfo
    public $fname = '';
    public $lname = '';
    public $max_trans = 50;
+   public $bank_id_filter = 0;
 
    function toString()
    {
-      return "SQLUserInfo: $this->user_id '$this->user_name' '$this->fname $this->lname' $this->max_trans";
+      return "SQLUserInfo: $this->user_id '$this->user_name' '$this->fname $this->lname' $this->max_trans $this->bank_id_filter" ;
    }
 }
 
@@ -119,7 +119,7 @@ function fetchQueryResults($query)
 
 function authenticateUser($username, $pw)
 {
-   $query = 'SELECT user_id, user_name, fname, lname, max_trans ' .
+   $query = 'SELECT user_id, user_name, fname, lname, max_trans, bank_id_filter ' .
             'FROM ' . getUsersTableName() .
             " WHERE user_name = '$username' AND pw = '" . sha1($pw) . "'";
 
@@ -129,11 +129,12 @@ function authenticateUser($username, $pw)
 
    $row  = pg_fetch_row($result);
    $user_info = new SQLUserInfo();
-   $user_info->user_id   = $row[0];
-   $user_info->user_name = $row[1];
-   $user_info->fname     = $row[2];
-   $user_info->lname     = $row[3];
-   $user_info->max_trans = $row[4];
+   $user_info->user_id        = $row[0];
+   $user_info->user_name      = $row[1];
+   $user_info->fname          = $row[2];
+   $user_info->lname          = $row[3];
+   $user_info->max_trans      = $row[4];
+   $user_info->bank_id_filter = $row[5];
 
    $_SESSION['sql_user_info'] = $user_info;
 
@@ -238,9 +239,8 @@ function applyBankIdFilter($bank_id)
 {
    $curr_user = $_SESSION['sql_user_info'];
 
-   $query = 'INSERT INTO ' . getFilterTableName() . ' (user_id, bank_id) ' .
-            'VALUES (' . $curr_user->user_id . ', ' . $bank_id . ')' .
-            'ON CONFLICT (user_id) DO UPDATE SET bank_id = ' . $bank_id;
+   $query = 'UPDATE ' . getUsersTableName() . ' SET bank_id_filter = ' . $bank_id .
+            ' WHERE user_id = ' .  $curr_user->user_id;
 
    printDebug("query: '$query'");
 

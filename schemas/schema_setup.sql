@@ -13,7 +13,10 @@ CREATE TABLE IF NOT EXISTS uft.uft_user (
    fname       VARCHAR(50) NOT NULL,
    lname       VARCHAR(50) NOT NULL,
    pw          VARCHAR(255) NOT NULL,
+   --- filters BEGIN
    max_trans   SMALLINT DEFAULT 30 NOT NULL,
+   bank_id_filter SMALLINT DEFAULT 0 NOT NULL,
+   --- filters END
    unique(user_name),
    unique(fname,  lname),
    PRIMARY KEY(user_id)
