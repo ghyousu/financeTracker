@@ -28,6 +28,20 @@ function getBankFilterId()
             <input  id='input_num_trans' type='number' step='1' <?php echo "value=" . $_SESSION['sql_user_info']->max_trans; ?> name='num_transactions' />
          </form>
       </li>
+
+      <!-- transaction notes filter -->
+      <br/>
+      <form id='form_num_transactions' method='POST' action='/post/updateTransactionNotesFilter.php'>
+         <li>
+               <label for='input_notes_filter'>Trans Notes Filter:</label>
+               <input  id='input_notes_filter' type='text' <?php echo "value='" . $_SESSION['sql_user_info']->notes_filter . "'"; ?> name='notes_filter_text' />
+         </li>
+         <li>
+            <input id='apply_notes_filter_btn' type="submit" value="Apply">
+         </li>
+      </form>
+
+
    </ul>
 
 <form id='form_delete_trans'  method='POST' action='/post/deleteTransactions.php'>
