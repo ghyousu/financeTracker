@@ -22,7 +22,11 @@
                 <tr class='tr_not_joint_account'>
               <?php endif; ?>
 
-                  <td><?php echo $bank->bank_alias; ?> </td>
+                  <td>
+                      <?php
+                          echo $bank->bank_alias . '(' . substr($bank->bank_account_num, -4, 4) . ')';
+                      ?>
+                  </td>
                   <td class='td_balance'><?php echo $bank->total_balance; ?>     </td>
 <!--                  <td class='td_link'>
                       <?php
