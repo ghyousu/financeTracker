@@ -333,6 +333,74 @@ function updateAmountFilter($new_min_bound, $new_max_bound)
    }
 }
 
+// Puts every filter back to its "off" value in one shot. max_trans is a display
+// preference rather than a filter, so it is deliberately left alone.
+function clearAllFilters()
+{
+   $curr_user = $_SESSION['sql_user_info'];
+
+   $query = 'UPDATE ' . getUsersTableName() .
+            " SET bank_id_filter = 0, notes_filter = '', " .
+            'min_amount_filter = NULL, max_amount_filter = NULL' .
+            ' WHERE user_id = ' . $curr_user->user_id;
+
+   printDebug("query: '$query'");
+
+   if (fetchQueryResults($query))
+   {
+      $curr_user->bank_id_filter    = 0;
+      $curr_user->notes_filter      = '';
+      $curr_user->min_amount_filter = null;
+      $curr_user->max_amount_filter = null;
+   }
+}
+
+// A filter that is applied is invisible once you scroll past the input box, so
+// the panel lists what is currently narrowing the list. Takes the already loaded
+// bank array so this does not cost an extra query.
+function getActiveFilterDescriptions($banks)
+{
+   $curr_user = $_SESSION['sql_user_info'];
+   $active_filters = array();
+
+   if ($curr_user->bank_id_filter > 0)
+   {
+      foreach ($banks as $bank)
+      {
+         if ($bank->bank_db_id == $curr_user->bank_id_filter)
+         {
+            array_push($active_filters, 'Bank: ' . $bank->bank_alias);
+            break;
+         }
+      }
+   }
+
+   if ($curr_user->notes_filter != '')
+   {
+      array_push($active_filters, 'Notes contains "' . $curr_user->notes_filter . '"');
+   }
+
+   $min_bound = $curr_user->min_amount_filter;
+   $max_bound = $curr_user->max_amount_filter;
+
+   // no $ prefix here, a negative bound would read as "$-500" and the column is
+   // already labelled Amount
+   if ($min_bound !== null && $max_bound !== null)
+   {
+      array_push($active_filters, "Amount $min_bound to $max_bound");
+   }
+   else if ($min_bound !== null)
+   {
+      array_push($active_filters, "Amount $min_bound or more");
+   }
+   else if ($max_bound !== null)
+   {
+      array_push($active_filters, "Amount $max_bound or less");
+   }
+
+   return $active_filters;
+}
+
 function getRecentTransctions($bank_db_id)
 {
    $query = 'SELECT t.trans_id, t.bank_db_id, b.bank_alias, t.user_id, t.amount, t.notes, t.trans_date FROM ' .

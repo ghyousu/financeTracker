@@ -16,13 +16,20 @@ individual transactions across multiple account owners from a single web page.
 - **Add transactions** — a grid with one row per bank account (amount, date,
   notes) so several transactions can be recorded in a single submission.
   Positive amounts are deposits, negative amounts are withdrawals.
-- **Recent transactions** — newest first, with the amount used to color deposits
-  vs. withdrawals.
+- **Recent transactions** — newest first, in a plain `border=1` table, with the
+  amount used to color deposits (`gold`) vs. withdrawals (`hotpink`). The table
+  markup and styling are intentionally left as they are; only the filter panel
+  above it has been restyled.
 - **Filters and preferences** — filter by bank, filter by notes substring
   (`ILIKE`), filter by an amount range, and set the max number of rows to
   display. Amounts may be positive or negative, and either end of the range may
   be left blank for an open-ended range. These are persisted **per user** in the
   database, not just in the session.
+- **Filter panel** — the filters sit in one card with a header that shows a count
+  of the active filters and a chip per active filter, so an applied filter is
+  never invisible. **Clear all** resets every filter in one click and is
+  disabled when nothing is active. `max_trans` is a display preference rather
+  than a filter, so Clear all leaves it alone.
 - **Multi-delete** — select any number of transaction rows and delete them; the
   bank balances are updated automatically by database triggers.
 
@@ -46,6 +53,7 @@ individual transactions across multiple account owners from a single web page.
 │   ├── updateNumTransactions.php
 │   ├── updateTransactionNotesFilter.php
 │   ├── updateAmountFilter.php
+│   ├── clearAllFilters.php
 │   └── applyBankNameFilter.php   # Triggered by the bank dropdown (GET)
 ├── schemas/           # PostgreSQL DDL, triggers, and seed data
 │   ├── schema_setup.sql
@@ -91,7 +99,7 @@ Everything lives in the `uft` schema. The schema name is centralized in
 The last five columns are the persisted UI preferences described above. Note the
 amount bounds use `NULL` rather than a sentinel like `0` or `''`, because both
 `0` and a negative value are legitimate things to filter on — an empty box in the
-UI means "no bound", and blanking both boxes clears the filter.
+UI means "no bound", and the Clear button blanks both.
 
 ### `uft.bank`
 
@@ -144,8 +152,14 @@ covering direct deposits, bills, rent, and credit-card payments.
 - **Query helpers** live in `common.php` and are named for what they do:
   `getBanksPerOwner`, `getRecentTransctions`, `addTransactions`,
   `deleteTransactions`, `applyBankIdFilter`, `updateNotesFilter`,
-  `updateAmountFilter`, `updateMaxTransactions`. `authenticateUser` both
-  validates and populates `$_SESSION['sql_user_info']`.
+  `updateAmountFilter`, `clearAllFilters`, `updateMaxTransactions`.
+  `authenticateUser` both validates and populates `$_SESSION['sql_user_info']`.
+  `getActiveFilterDescriptions` turns the saved filters into display strings for
+  the panel's chips; it takes the already-loaded bank array so it does not cost
+  an extra query.
+- **A filter write goes to the database *and* the session.** Each `update*Filter`
+  helper writes the column, then updates the matching property on
+  `$_SESSION['sql_user_info']`, so the current request and the next one agree.
 - **Field names in the add-transaction form are built from the bank alias** as
   `<alias>@amount`, `<alias>@date`, `<alias>@notes`. `postNewTransactions.php`
   loops over the banks and rebuilds those names to read the POST body. So if you

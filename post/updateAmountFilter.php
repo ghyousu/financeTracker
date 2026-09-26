@@ -12,7 +12,8 @@
       $min_amount = isset($_POST['min_amount_filter_text']) ? $_POST['min_amount_filter_text'] : '';
       $max_amount = isset($_POST['max_amount_filter_text']) ? $_POST['max_amount_filter_text'] : '';
 
-      // clearing both boxes is how the user turns the filter back off
+      // blanking both boxes is how the user turns this one filter back off, the
+      // clear all button in the panel header resets every filter at once
       updateAmountFilter($min_amount, $max_amount);
 
       header("location: /index.php");
