@@ -41,6 +41,23 @@ function getBankFilterId()
          </li>
       </form>
 
+      <!-- transaction amount range filter, either end may be left blank for an
+           open ended range. Blanking both turns the filter off. -->
+      <br/>
+      <form id='form_amount_filter' method='POST' action='/post/updateAmountFilter.php'>
+         <li>
+               <label for='input_min_amount_filter'>Amount From:</label>
+               <input id='input_min_amount_filter' type='number' step='any' <?php echo "value='" . getAmountBoundForInput($_SESSION['sql_user_info']->min_amount_filter) . "'"; ?> name='min_amount_filter_text' />
+         </li>
+         <li>
+               <label for='input_max_amount_filter'>Amount To:</label>
+               <input id='input_max_amount_filter' type='number' step='any' <?php echo "value='" . getAmountBoundForInput($_SESSION['sql_user_info']->max_amount_filter) . "'"; ?> name='max_amount_filter_text' />
+         </li>
+         <li>
+            <input id='apply_amount_filter_btn' type="submit" value="Apply">
+         </li>
+      </form>
+
 
    </ul>
 

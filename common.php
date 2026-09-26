@@ -35,6 +35,8 @@ class SQLUserInfo
    public $max_trans = 50;
    public $bank_id_filter = 0;
    public $notes_filter = '';
+   public $min_amount_filter = null;
+   public $max_amount_filter = null;
 
    function toString()
    {
@@ -120,7 +122,8 @@ function fetchQueryResults($query)
 
 function authenticateUser($username, $pw)
 {
-   $query = 'SELECT user_id, user_name, fname, lname, max_trans, bank_id_filter, notes_filter ' .
+   $query = 'SELECT user_id, user_name, fname, lname, max_trans, bank_id_filter, notes_filter, ' .
+            'min_amount_filter, max_amount_filter ' .
             'FROM ' . getUsersTableName() .
             " WHERE user_name = '$username' AND pw = '" . sha1($pw) . "'";
 
@@ -137,6 +140,8 @@ function authenticateUser($username, $pw)
    $user_info->max_trans      = $row[4];
    $user_info->bank_id_filter = $row[5];
    $user_info->notes_filter   = $row[6];
+   $user_info->min_amount_filter = $row[7];
+   $user_info->max_amount_filter = $row[8];
 
    $_SESSION['sql_user_info'] = $user_info;
 
@@ -261,6 +266,73 @@ function updateNotesFilter($new_notes_filter)
    fetchQueryResults($query) && $_SESSION['sql_user_info']->notes_filter = $new_notes_filter;
 }
 
+// Turns one end of the amount range into either a number we can safely put in
+// the query or null for "no bound". An empty text box means no bound, so 0 stays
+// a value the user can actually filter on.
+function normalizeAmountBound($bound)
+{
+   if ($bound === null)
+   {
+      return null;
+   }
+
+   $bound = trim($bound);
+
+   if ($bound === '')
+   {
+      return null;
+   }
+
+   if (!is_numeric($bound))
+   {
+      return null;
+   }
+
+   return $bound + 0;
+}
+
+// null when a bound is unset, otherwise the number to print in the text box
+function getAmountBoundForInput($bound)
+{
+   if ($bound === null || $bound === '')
+   {
+      return '';
+   }
+
+   return $bound;
+}
+
+function updateAmountFilter($new_min_bound, $new_max_bound)
+{
+   $curr_user = $_SESSION['sql_user_info'];
+
+   $min_bound = normalizeAmountBound($new_min_bound);
+   $max_bound = normalizeAmountBound($new_max_bound);
+
+   if ($min_bound !== null && $max_bound !== null && $min_bound > $max_bound)
+   {
+      printError("amount range is backwards (from $min_bound to $max_bound). Filter left unchanged.");
+      return;
+   }
+
+   // these are either NULL or a number that is_numeric() already accepted, so
+   // there is nothing left to quote
+   $min_bound_sql = ($min_bound === null) ? 'NULL' : $min_bound;
+   $max_bound_sql = ($max_bound === null) ? 'NULL' : $max_bound;
+
+   $query = 'UPDATE ' . getUsersTableName() .
+            " SET min_amount_filter = $min_bound_sql, max_amount_filter = $max_bound_sql" .
+            ' WHERE user_id = ' .  $curr_user->user_id;
+
+   printDebug("query: '$query'");
+
+   if (fetchQueryResults($query))
+   {
+      $curr_user->min_amount_filter = $min_bound;
+      $curr_user->max_amount_filter = $max_bound;
+   }
+}
+
 function getRecentTransctions($bank_db_id)
 {
    $query = 'SELECT t.trans_id, t.bank_db_id, b.bank_alias, t.user_id, t.amount, t.notes, t.trans_date FROM ' .
@@ -279,6 +351,20 @@ function getRecentTransctions($bank_db_id)
    if ($notes_filter != '')
    {
       $query = $query . " AND t.notes ILIKE('%" . $notes_filter . "%')";
+   }
+
+   // either end of the range is optional, so this covers the open ended cases
+   // too, e.g. only a lower bound of 500 is a "500 and up" filter
+   $min_amount_filter = $_SESSION['sql_user_info']->min_amount_filter;
+   if ($min_amount_filter !== null && $min_amount_filter !== '')
+   {
+      $query = $query . ' AND t.amount >= ' . $min_amount_filter;
+   }
+
+   $max_amount_filter = $_SESSION['sql_user_info']->max_amount_filter;
+   if ($max_amount_filter !== null && $max_amount_filter !== '')
+   {
+      $query = $query . ' AND t.amount <= ' . $max_amount_filter;
    }
    // ---------------------------- filters END ---------------------------------------
 

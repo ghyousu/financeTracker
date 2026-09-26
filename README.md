@@ -19,8 +19,10 @@ individual transactions across multiple account owners from a single web page.
 - **Recent transactions** — newest first, with the amount used to color deposits
   vs. withdrawals.
 - **Filters and preferences** — filter by bank, filter by notes substring
-  (`ILIKE`), and set the max number of rows to display. These are persisted
-  **per user** in the database, not just in the session.
+  (`ILIKE`), filter by an amount range, and set the max number of rows to
+  display. Amounts may be positive or negative, and either end of the range may
+  be left blank for an open-ended range. These are persisted **per user** in the
+  database, not just in the session.
 - **Multi-delete** — select any number of transaction rows and delete them; the
   bank balances are updated automatically by database triggers.
 
@@ -43,6 +45,7 @@ individual transactions across multiple account owners from a single web page.
 │   ├── deleteTransactions.php
 │   ├── updateNumTransactions.php
 │   ├── updateTransactionNotesFilter.php
+│   ├── updateAmountFilter.php
 │   └── applyBankNameFilter.php   # Triggered by the bank dropdown (GET)
 ├── schemas/           # PostgreSQL DDL, triggers, and seed data
 │   ├── schema_setup.sql
@@ -82,8 +85,13 @@ Everything lives in the `uft` schema. The schema name is centralized in
 | `max_trans` | max rows in the recent-transactions list (default 30) |
 | `bank_id_filter` | `0` means all banks |
 | `notes_filter` | substring matched against transaction notes |
+| `min_amount_filter` | `NUMERIC(10,2)`; `NULL` = no lower bound |
+| `max_amount_filter` | `NUMERIC(10,2)`; `NULL` = no upper bound |
 
-The last three columns are the persisted UI preferences described above.
+The last five columns are the persisted UI preferences described above. Note the
+amount bounds use `NULL` rather than a sentinel like `0` or `''`, because both
+`0` and a negative value are legitimate things to filter on — an empty box in the
+UI means "no bound", and blanking both boxes clears the filter.
 
 ### `uft.bank`
 
@@ -136,8 +144,8 @@ covering direct deposits, bills, rent, and credit-card payments.
 - **Query helpers** live in `common.php` and are named for what they do:
   `getBanksPerOwner`, `getRecentTransctions`, `addTransactions`,
   `deleteTransactions`, `applyBankIdFilter`, `updateNotesFilter`,
-  `updateMaxTransactions`. `authenticateUser` both validates and populates
-  `$_SESSION['sql_user_info']`.
+  `updateAmountFilter`, `updateMaxTransactions`. `authenticateUser` both
+  validates and populates `$_SESSION['sql_user_info']`.
 - **Field names in the add-transaction form are built from the bank alias** as
   `<alias>@amount`, `<alias>@date`, `<alias>@notes`. `postNewTransactions.php`
   loops over the banks and rebuilds those names to read the POST body. So if you
@@ -158,7 +166,9 @@ exposed to anything but localhost:
   concatenation of user input — login credentials, the notes filter, POSTed
   amounts, and notes. The only escaping anywhere is a manual
   `str_replace("'", "''")` on the notes field in `postNewTransactions.php`. Use
-  `pg_query_params()` instead.
+  `pg_query_params()` instead. The amount range filter is the one exception: its
+  bounds go through `normalizeAmountBound()`, which rejects anything
+  `is_numeric()` won't take, so it does not add a new hole.
 - **Authentication is bypassed.** `index.php` logs in as `myou` with a
   hardcoded password when no session exists, and `login.php` immediately
   redirects to the main page, so the real credential check is commented out.
