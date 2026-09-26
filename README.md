@@ -21,10 +21,10 @@ individual transactions across multiple account owners from a single web page.
   markup and styling are intentionally left as they are; only the filter panel
   above it has been restyled.
 - **Filters and preferences** — filter by bank, filter by notes substring
-  (`ILIKE`), filter by an amount range, and set the max number of rows to
-  display. Amounts may be positive or negative, and either end of the range may
-  be left blank for an open-ended range. These are persisted **per user** in the
-  database, not just in the session.
+  (`ILIKE`), filter by an amount range, filter by a date range, and set the max
+  number of rows to display. Amounts may be positive or negative, and either end
+  of either range may be left blank for an open-ended range. These are persisted
+  **per user** in the database, not just in the session.
 - **Filter panel** — the filters sit in one card with a header that shows a count
   of the active filters and a chip per active filter, so an applied filter is
   never invisible. **Clear all** resets every filter in one click and is
@@ -53,6 +53,7 @@ individual transactions across multiple account owners from a single web page.
 │   ├── updateNumTransactions.php
 │   ├── updateTransactionNotesFilter.php
 │   ├── updateAmountFilter.php
+│   ├── updateDateFilter.php
 │   ├── clearAllFilters.php
 │   └── applyBankNameFilter.php   # Triggered by the bank dropdown (GET)
 ├── schemas/           # PostgreSQL DDL, triggers, and seed data
@@ -95,11 +96,13 @@ Everything lives in the `uft` schema. The schema name is centralized in
 | `notes_filter` | substring matched against transaction notes |
 | `min_amount_filter` | `NUMERIC(10,2)`; `NULL` = no lower bound |
 | `max_amount_filter` | `NUMERIC(10,2)`; `NULL` = no upper bound |
+| `min_date_filter` | `DATE`; `NULL` = no lower bound |
+| `max_date_filter` | `DATE`; `NULL` = no upper bound |
 
-The last five columns are the persisted UI preferences described above. Note the
-amount bounds use `NULL` rather than a sentinel like `0` or `''`, because both
+The last seven columns are the persisted UI preferences described above. Note the
+range bounds use `NULL` rather than a sentinel like `0` or `''`, because both
 `0` and a negative value are legitimate things to filter on — an empty box in the
-UI means "no bound", and the Clear button blanks both.
+UI means "no bound", and the Clear all button blanks them.
 
 ### `uft.bank`
 
@@ -152,7 +155,8 @@ covering direct deposits, bills, rent, and credit-card payments.
 - **Query helpers** live in `common.php` and are named for what they do:
   `getBanksPerOwner`, `getRecentTransctions`, `addTransactions`,
   `deleteTransactions`, `applyBankIdFilter`, `updateNotesFilter`,
-  `updateAmountFilter`, `clearAllFilters`, `updateMaxTransactions`.
+  `updateAmountFilter`, `updateDateFilter`, `clearAllFilters`,
+  `updateMaxTransactions`.
   `authenticateUser` both validates and populates `$_SESSION['sql_user_info']`.
   `getActiveFilterDescriptions` turns the saved filters into display strings for
   the panel's chips; it takes the already-loaded bank array so it does not cost
@@ -160,6 +164,15 @@ covering direct deposits, bills, rent, and credit-card payments.
 - **A filter write goes to the database *and* the session.** Each `update*Filter`
   helper writes the column, then updates the matching property on
   `$_SESSION['sql_user_info']`, so the current request and the next one agree.
+- **Range filters are validated before they reach SQL.** `normalizeAmountBound`
+  reduces a box to a number or `null`, `normalizeDateBound` reduces it to a
+  `Y-m-d` string or `null` — it rejects impossible dates like `2025-02-31`,
+  which `DateTime::createFromFormat` would otherwise roll over into March. Both
+  leave the filter unchanged rather than half-applying it.
+- **Date bounds compare `trans_date::date`, not the raw timestamptz.** The boxes
+  are calendar dates, so the filter is cast to match the `substr()` the Date
+  column displays. This costs an index on the column, which is irrelevant at
+  this table size.
 - **Field names in the add-transaction form are built from the bank alias** as
   `<alias>@amount`, `<alias>@date`, `<alias>@notes`. `postNewTransactions.php`
   loops over the banks and rebuilds those names to read the POST body. So if you

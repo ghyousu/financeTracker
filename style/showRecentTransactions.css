@@ -116,6 +116,10 @@
    text-align: right;
 }
 
+.filter_date {
+   width: 10em;
+}
+
 .filter_currency {
    font-size: 0.8em;
    color: #6b6b76;

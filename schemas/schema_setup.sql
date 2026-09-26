@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS uft.uft_user (
    notes_filter VARCHAR(200) DEFAULT '',
    min_amount_filter NUMERIC(10, 2), -- NULL means no lower bound
    max_amount_filter NUMERIC(10, 2), -- NULL means no upper bound
+   min_date_filter DATE,             -- NULL means no lower bound
+   max_date_filter DATE,             -- NULL means no upper bound
    --- filters END
    unique(user_name),
    unique(fname,  lname),
@@ -56,9 +58,9 @@ CREATE TABLE IF NOT EXISTS uft.transaction (
 );
 
 
--- The two amount filter columns were added after the initial release. They are
--- no-ops on a fresh database (the CREATE TABLE above already made them) but let
--- an existing database pick them up without a full schema reset:
+-- The amount and date range filter columns were added after the initial release.
+-- They are no-ops on a fresh database (the CREATE TABLE above already made them)
+-- but let an existing database pick them up without a full schema reset:
 --
 --    psql "$DATABASE_URL" -f schemas/schema_setup.sql
 --
@@ -66,5 +68,7 @@ CREATE TABLE IF NOT EXISTS uft.transaction (
 -- filters change and every transaction still shows up.
 ALTER TABLE uft.uft_user ADD COLUMN IF NOT EXISTS min_amount_filter NUMERIC(10, 2);
 ALTER TABLE uft.uft_user ADD COLUMN IF NOT EXISTS max_amount_filter NUMERIC(10, 2);
+ALTER TABLE uft.uft_user ADD COLUMN IF NOT EXISTS min_date_filter DATE;
+ALTER TABLE uft.uft_user ADD COLUMN IF NOT EXISTS max_date_filter DATE;
 
 

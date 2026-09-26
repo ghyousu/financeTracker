@@ -77,9 +77,23 @@ function getBankFilterId()
             <span class='filter_label'>Amount</span>
             <div class='filter_control'>
                <span class='filter_range'>
-                  <span class='filter_currency'>$</span><input id='input_min_amount_filter' class='filter_amount' type='number' step='any' aria-label='Amount from' <?php echo "value='" . getAmountBoundForInput($_SESSION['sql_user_info']->min_amount_filter) . "'"; ?> name='min_amount_filter_text' placeholder='no min' title='Show transactions at or above this amount' />
+                  <span class='filter_currency'>$</span><input id='input_min_amount_filter' class='filter_amount' type='number' step='any' aria-label='Amount from' <?php echo "value='" . getFilterBoundForInput($_SESSION['sql_user_info']->min_amount_filter) . "'"; ?> name='min_amount_filter_text' placeholder='no min' title='Show transactions at or above this amount' />
                   <span class='filter_range_sep'>to</span>
-                  <span class='filter_currency'>$</span><input id='input_max_amount_filter' class='filter_amount' type='number' step='any' aria-label='Amount to' <?php echo "value='" . getAmountBoundForInput($_SESSION['sql_user_info']->max_amount_filter) . "'"; ?> name='max_amount_filter_text' placeholder='no max' title='Show transactions at or below this amount' />
+                  <span class='filter_currency'>$</span><input id='input_max_amount_filter' class='filter_amount' type='number' step='any' aria-label='Amount to' <?php echo "value='" . getFilterBoundForInput($_SESSION['sql_user_info']->max_amount_filter) . "'"; ?> name='max_amount_filter_text' placeholder='no max' title='Show transactions at or below this amount' />
+               </span>
+               <input class='filter_btn' type='submit' value='Apply' />
+            </div>
+         </form>
+
+         <!-- either end may be left blank for an open ended range. The boxes are
+              type=date, so the browser hands back Y-m-dd or nothing at all. -->
+         <form id='form_date_filter' class='filter_field' method='POST' action='/post/updateDateFilter.php'>
+            <span class='filter_label'>Date</span>
+            <div class='filter_control'>
+               <span class='filter_range'>
+                  <input id='input_min_date_filter' class='filter_date' type='date' aria-label='Date from' <?php echo "value='" . htmlspecialchars(getFilterBoundForInput($_SESSION['sql_user_info']->min_date_filter), ENT_QUOTES) . "'"; ?> name='min_date_filter' title='Show transactions on or after this date' />
+                  <span class='filter_range_sep'>to</span>
+                  <input id='input_max_date_filter' class='filter_date' type='date' aria-label='Date to' <?php echo "value='" . htmlspecialchars(getFilterBoundForInput($_SESSION['sql_user_info']->max_date_filter), ENT_QUOTES) . "'"; ?> name='max_date_filter' title='Show transactions on or before this date' />
                </span>
                <input class='filter_btn' type='submit' value='Apply' />
             </div>

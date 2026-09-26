@@ -37,6 +37,8 @@ class SQLUserInfo
    public $notes_filter = '';
    public $min_amount_filter = null;
    public $max_amount_filter = null;
+   public $min_date_filter = null;
+   public $max_date_filter = null;
 
    function toString()
    {
@@ -123,7 +125,7 @@ function fetchQueryResults($query)
 function authenticateUser($username, $pw)
 {
    $query = 'SELECT user_id, user_name, fname, lname, max_trans, bank_id_filter, notes_filter, ' .
-            'min_amount_filter, max_amount_filter ' .
+            'min_amount_filter, max_amount_filter, min_date_filter, max_date_filter ' .
             'FROM ' . getUsersTableName() .
             " WHERE user_name = '$username' AND pw = '" . sha1($pw) . "'";
 
@@ -142,6 +144,8 @@ function authenticateUser($username, $pw)
    $user_info->notes_filter   = $row[6];
    $user_info->min_amount_filter = $row[7];
    $user_info->max_amount_filter = $row[8];
+   $user_info->min_date_filter = $row[9];
+   $user_info->max_date_filter = $row[10];
 
    $_SESSION['sql_user_info'] = $user_info;
 
@@ -291,8 +295,8 @@ function normalizeAmountBound($bound)
    return $bound + 0;
 }
 
-// null when a bound is unset, otherwise the number to print in the text box
-function getAmountBoundForInput($bound)
+// null when a bound is unset, otherwise the value to print in the text box
+function getFilterBoundForInput($bound)
 {
    if ($bound === null || $bound === '')
    {
@@ -333,6 +337,79 @@ function updateAmountFilter($new_min_bound, $new_max_bound)
    }
 }
 
+// Turns one end of the date range into either a 'Y-m-d' string we can safely put
+// in the query or null for "no bound", same rule as the amount range: an empty
+// text box means no bound.
+function normalizeDateBound($bound)
+{
+   if ($bound === null)
+   {
+      return null;
+   }
+
+   $bound = trim($bound);
+
+   if ($bound === '')
+   {
+      return null;
+   }
+
+   $date = DateTime::createFromFormat('Y-m-d', $bound);
+
+   if ($date === false)
+   {
+      return null;
+   }
+
+   // createFromFormat is lenient and will quietly roll 2025-02-31 over into
+   // March, so make sure it did not have to change anything. getLastErrors()
+   // returns false rather than an array when there is nothing to report.
+   $date_errors = DateTime::getLastErrors();
+
+   if (is_array($date_errors) && ($date_errors['warning_count'] > 0 || $date_errors['error_count'] > 0))
+   {
+      return null;
+   }
+
+   if ($date->format('Y-m-d') !== $bound)
+   {
+      return null;
+   }
+
+   return $bound;
+}
+
+function updateDateFilter($new_min_bound, $new_max_bound)
+{
+   $curr_user = $_SESSION['sql_user_info'];
+
+   $min_bound = normalizeDateBound($new_min_bound);
+   $max_bound = normalizeDateBound($new_max_bound);
+
+   // 'Y-m-d' sorts the same way chronologically
+   if ($min_bound !== null && $max_bound !== null && $min_bound > $max_bound)
+   {
+      printError("date range is backwards ($min_bound to $max_bound). Filter left unchanged.");
+      return;
+   }
+
+   // normalizeDateBound only ever hands back a 'Y-m-d' string or null
+   $min_bound_sql = ($min_bound === null) ? 'NULL' : "'$min_bound'";
+   $max_bound_sql = ($max_bound === null) ? 'NULL' : "'$max_bound'";
+
+   $query = 'UPDATE ' . getUsersTableName() .
+            " SET min_date_filter = $min_bound_sql, max_date_filter = $max_bound_sql" .
+            ' WHERE user_id = ' . $curr_user->user_id;
+
+   printDebug("query: '$query'");
+
+   if (fetchQueryResults($query))
+   {
+      $curr_user->min_date_filter = $min_bound;
+      $curr_user->max_date_filter = $max_bound;
+   }
+}
+
 // Puts every filter back to its "off" value in one shot. max_trans is a display
 // preference rather than a filter, so it is deliberately left alone.
 function clearAllFilters()
@@ -341,7 +418,8 @@ function clearAllFilters()
 
    $query = 'UPDATE ' . getUsersTableName() .
             " SET bank_id_filter = 0, notes_filter = '', " .
-            'min_amount_filter = NULL, max_amount_filter = NULL' .
+            'min_amount_filter = NULL, max_amount_filter = NULL, ' .
+            'min_date_filter = NULL, max_date_filter = NULL' .
             ' WHERE user_id = ' . $curr_user->user_id;
 
    printDebug("query: '$query'");
@@ -352,6 +430,8 @@ function clearAllFilters()
       $curr_user->notes_filter      = '';
       $curr_user->min_amount_filter = null;
       $curr_user->max_amount_filter = null;
+      $curr_user->min_date_filter   = null;
+      $curr_user->max_date_filter   = null;
    }
 }
 
@@ -398,6 +478,22 @@ function getActiveFilterDescriptions($banks)
       array_push($active_filters, "Amount $max_bound or less");
    }
 
+   $min_date = $curr_user->min_date_filter;
+   $max_date = $curr_user->max_date_filter;
+
+   if ($min_date !== null && $max_date !== null)
+   {
+      array_push($active_filters, "Date $min_date to $max_date");
+   }
+   else if ($min_date !== null)
+   {
+      array_push($active_filters, "Date from $min_date");
+   }
+   else if ($max_date !== null)
+   {
+      array_push($active_filters, "Date up to $max_date");
+   }
+
    return $active_filters;
 }
 
@@ -434,6 +530,21 @@ function getRecentTransctions($bank_db_id)
    {
       $query = $query . ' AND t.amount <= ' . $max_amount_filter;
    }
+
+   // trans_date is a TIMESTAMPTZ but the filter boxes are calendar dates, so
+   // compare the date part. That also keeps the filter consistent with the column
+   // on screen, which is substr() of the same session timezone rendering.
+   $min_date_filter = $_SESSION['sql_user_info']->min_date_filter;
+   if ($min_date_filter !== null && $min_date_filter !== '')
+   {
+      $query = $query . " AND t.trans_date::date >= '" . $min_date_filter . "'";
+   }
+
+   $max_date_filter = $_SESSION['sql_user_info']->max_date_filter;
+   if ($max_date_filter !== null && $max_date_filter !== '')
+   {
+      $query = $query . " AND t.trans_date::date <= '" . $max_date_filter . "'";
+   }
    // ---------------------------- filters END ---------------------------------------
 
    $query = $query . ' ORDER BY trans_date DESC, last_update DESC LIMIT ' . $_SESSION['sql_user_info']->max_trans;
@@ -451,7 +562,7 @@ function getRecentTransctions($bank_db_id)
 
    while ( $row = pg_fetch_row($result) )
    {
-      $trans = new SQLBank();
+      $trans = new SQLTransaction();
 
       $trans->trans_id         = $row[0];
       $trans->bank_db_id       = $row[1];
