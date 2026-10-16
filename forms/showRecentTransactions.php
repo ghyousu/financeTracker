@@ -111,7 +111,7 @@ function getBankFilterId()
          <th>Date</th>
          <th>Amount</th>
          <th>Notes</th>
-<!--          <th/> -->
+         <th>Edit</th>
       </tr>
 
       <?php
@@ -120,9 +120,9 @@ function getBankFilterId()
       ?>
       <?php foreach ($transactions as $trans): ?>
          <?php if ($trans->amount > 0) : ?>
-         <tr class='tr_deposits'>
+         <tr class='tr_deposits' data-trans-id='<?php echo $trans->trans_id; ?>'>
          <?php else : ?>
-         <tr class='tr_withdrawals'>
+         <tr class='tr_withdrawals' data-trans-id='<?php echo $trans->trans_id; ?>'>
          <?php endif; ?>
             <td class='td_trans_row_index'>
                <?php echo $row_index++; ?>
@@ -135,13 +135,14 @@ function getBankFilterId()
 
             <td class='td_trans_amount'> <?php echo $trans->amount; ?> </td>
 
-            <td class='td_trans_notes'> <?php echo htmlspecialchars($trans->notes, ENT_QUOTES); ?> </td>
+            <td class='td_trans_notes'>
+               <span class='notes_display'><?php echo htmlspecialchars($trans->notes, ENT_QUOTES); ?></span>
+               <textarea class='notes_edit' style='display:none;'><?php echo htmlspecialchars($trans->notes, ENT_QUOTES); ?></textarea>
+            </td>
 
-<!--            <td class='td_edit_trans'>
-               <?php
-                  echo '<a href="/form/editTransaction.php?trans_id=' . $trans->trans_id. '">Edit</a>';
-               ?>
-            </td> -->
+            <td class='td_edit_trans'>
+               <button type='button' class='btn_edit_trans' onclick='toggleEditNotes(this)'>Edit</button>
+            </td>
          </tr>
       <?php endforeach; ?>
 

@@ -217,6 +217,48 @@
    width: 7%;
 }
 
+.btn_edit_trans {
+   font-size: 0.8em;
+   padding: 5px 12px;
+   color: #22222a;
+   background-color: #ffffff;
+   border: 1px solid #b9b9c2;
+   border-radius: 4px;
+   cursor: pointer;
+}
+
+.btn_edit_trans:hover {
+   background-color: #ececf1;
+}
+
+.btn_edit_trans.btn_apply {
+   background-color: #6f8fd0;
+   color: #ffffff;
+   border-color: #6f8fd0;
+}
+
+.btn_edit_trans.btn_apply:hover {
+   background-color: #5a7bc4;
+   border-color: #5a7bc4;
+}
+
+.td_trans_notes .notes_edit {
+   width: 100%;
+   font-size: 1.3em;
+   font-family: inherit;
+   padding: 4px;
+   border: 1px solid #b9b9c2;
+   border-radius: 4px;
+   box-sizing: border-box;
+   min-height: 1.5em;
+   resize: vertical;
+}
+
+.td_trans_notes .notes_edit:focus {
+   outline: 2px solid #6f8fd0;
+   outline-offset: 1px;
+}
+
 #input_delete_transactions_submit {
    font-size: 2em;
 }
