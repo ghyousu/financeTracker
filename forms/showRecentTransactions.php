@@ -141,7 +141,7 @@ function getBankFilterId()
             </td>
 
             <td class='td_edit_trans'>
-               <button type='button' class='btn_edit_trans' onclick='toggleEditNotes(this)'>Edit</button>
+               <button type='button' class='btn_edit_trans'>Edit</button>
             </td>
          </tr>
       <?php endforeach; ?>

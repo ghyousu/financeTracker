@@ -18,8 +18,27 @@ function bank_filter_changed()
    window.location.replace( new_url );
 }
 
-function toggleEditNotes(button)
+function initEditButtons()
 {
+   var buttons = document.querySelectorAll('.btn_edit_trans');
+   console.log('Found edit buttons:', buttons.length);
+   buttons.forEach(function(button) {
+      button.addEventListener('click', function(event) {
+         console.log('Event listener click', this, event);
+         toggleEditNotes(this, event);
+      });
+   });
+}
+
+document.addEventListener('DOMContentLoaded', initEditButtons);
+
+function toggleEditNotes(button, event)
+{
+   if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+   }
+
    var row = button.closest('tr');
    var trans_id = row.getAttribute('data-trans-id');
    var notesDisplay = row.querySelector('.notes_display');
@@ -28,6 +47,8 @@ function toggleEditNotes(button)
    if (button.textContent === 'Edit') {
       notesDisplay.style.display = 'none';
       notesEdit.style.display = 'block';
+      notesEdit.removeAttribute('readonly');
+      notesEdit.removeAttribute('disabled');
       notesEdit.focus();
       button.textContent = 'Apply';
       button.classList.add('btn_apply');
@@ -35,6 +56,7 @@ function toggleEditNotes(button)
       var newNotes = notesEdit.value;
       applyNotes(trans_id, newNotes, button, notesDisplay, notesEdit);
    }
+   return false;
 }
 
 function applyNotes(trans_id, notes, button, notesDisplay, notesEdit)
