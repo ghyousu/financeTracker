@@ -4,12 +4,18 @@ AS $$
    DECLARE
       old_balance NUMERIC(10,2) := 0;
       new_balance NUMERIC(10,2) := 0;
-   BEGIN
-      SELECT total_balance INTO old_balance FROM uft.bank WHERE bank_db_id = NEW.bank_db_id;
-      new_balance := old_balance + NEW.amount;
-      NEW.last_update = now();
+BEGIN
+       IF (TG_OP = 'INSERT') OR (TG_OP = 'UPDATE' AND NEW.amount IS DISTINCT FROM OLD.amount) THEN
+         SELECT total_balance INTO old_balance FROM uft.bank WHERE bank_db_id = NEW.bank_db_id;
+         IF TG_OP = 'INSERT' THEN
+            new_balance := old_balance + NEW.amount;
+         ELSE
+            new_balance := old_balance - OLD.amount + NEW.amount;
+         END IF;
+         NEW.last_update = now();
 
-      UPDATE uft.bank SET total_balance = new_balance WHERE bank_db_id = NEW.bank_db_id;
+         UPDATE uft.bank SET total_balance = new_balance WHERE bank_db_id = NEW.bank_db_id;
+      END IF;
       RETURN NEW;
    END;
 $$ LANGUAGE 'plpgsql';
